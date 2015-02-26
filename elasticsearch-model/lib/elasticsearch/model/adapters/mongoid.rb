@@ -65,8 +65,11 @@ module Elasticsearch
           def __find_in_batches(options={}, &block)
             options[:batch_size] ||= 1_000
             items = []
-
-            all.each do |item|
+            selector = "all"
+            selector = options.delete(:scope) if options[:scope]
+            selector = ( options.delete(:query) ).to_s if options[:query]
+             
+            (eval selector).each do |item|
               items << item
 
               if items.length % options[:batch_size] == 0
